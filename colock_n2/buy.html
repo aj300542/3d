@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <title>立刻购买 — 辉光管二号机 3D 模型包</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+        :root {
+            --bg: #0f1720;
+            --card: #0b1220;
+            --accent: #ff6b6b;
+            --muted: #9aa4b2;
+            --white: #fff;
+            --radius: 1.2vh;
+            --file-height: 6.2vh;
+            /* 行高基准，可调 */
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background: linear-gradient(180deg, var(--bg) 0%, #071022 100%);
+            color: var(--white);
+            font-family: Arial, Helvetica, sans-serif
+        }
+
+        .wrap {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3vh 3vw
+        }
+
+        .card {
+            width: 94vw;
+            max-width: 96vw;
+            border-radius: var(--radius);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.06));
+            box-shadow: 0 0.8vh 3vh rgba(2, 6, 23, .6);
+            overflow: hidden;
+            display: flex;
+            gap: 2vw;
+            max-height: 92vh
+        }
+
+        .left {
+            flex: 1;
+            min-width: 40vw;
+            padding: 3vh 3vw;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5vh;
+            overflow: auto
+        }
+
+        .right {
+            width: 34vw;
+            min-width: 28vw;
+            padding: 2.5vh 2.5vw;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(0, 0, 0, 0.04));
+            display: flex;
+            flex-direction: column;
+            gap: 1.2vh
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2vh;
+            letter-spacing: -0.2vh
+        }
+
+        p.lead {
+            margin: 0;
+            color: var(--muted);
+            font-size: 1.6vh
+        }
+
+        .preview {
+            height: 38vh;
+            border-radius: 1vh;
+            background: linear-gradient(135deg, #071428, #00121a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 1.6vh;
+            border: 0.12vh solid rgba(255, 255, 255, 0.04);
+            overflow: hidden
+        }
+
+        .preview-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block
+        }
+
+        .files {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2vh;
+            margin-top: 1vh
+        }
+
+        /* 单行：左侧 GIF 缩略 + 右侧 meta 与按钮 */
+        .file {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: calc(var(--file-height) * 0.08) 1.2vw;
+            height: var(--file-height);
+            border-radius: 0.9vh;
+            background: rgba(255, 255, 255, 0.02);
+            border: 0.08vh solid rgba(255, 255, 255, 0.02);
+            box-sizing: border-box;
+            gap: 1vw;
+        }
+
+        .file-left {
+            display: flex;
+            align-items: center;
+            gap: 1vw;
+            flex: 1;
+            min-width: 0
+        }
+
+        .gif-thumb {
+            width: calc(var(--file-height) * 1.1);
+            /* 方形缩略，随行高缩放 */
+            height: calc(var(--file-height) * 1.1);
+            flex: 0 0 auto;
+            border-radius: 0.8vh;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .gif-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block
+        }
+
+        .meta {
+            display: flex;
+            flex-direction: column;
+            min-width: 0
+        }
+
+        .meta .name {
+            font-size: 1.6vh;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden
+        }
+
+        .meta .sub {
+            font-size: 1.2vh;
+            color: var(--muted);
+            margin-top: 0.3vh
+        }
+
+        .actions {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 0.8vw
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1vh 1.4vw;
+            border-radius: 0.9vh;
+            background: var(--accent);
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0.6vh 1.8vh rgba(255, 107, 107, 0.12);
+            font-size: 1.5vh
+        }
+
+        .btn.secondary {
+            background: transparent;
+            border: 0.08vh solid rgba(255, 255, 255, 0.06);
+            color: var(--white);
+            padding: 1vh 1.6vw;
+            font-size: 1.4vh
+        }
+
+        .btn-locked {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--muted);
+            border: 0.08vh dashed rgba(255, 255, 255, 0.06);
+            cursor: not-allowed;
+            padding: 0.9vh 1.2vw;
+            border-radius: 0.9vh;
+            font-weight: 600;
+            font-size: 1.5vh
+        }
+
+        .right .panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1vh
+        }
+
+        .note {
+            font-size: 1.2vh;
+            color: var(--muted)
+        }
+
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+            z-index: 9999
+        }
+
+        .modal {
+            width: 90vw;
+            max-width: 82vw;
+            background: #0b1220;
+            color: #fff;
+            border-radius: 1.2vh;
+            padding: 2.4vh 2.4vw;
+            box-shadow: 0 1vh 4vh rgba(0, 0, 0, 0.6)
+        }
+
+        .qr-grid {
+            display: flex;
+            gap: 4vw;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1.2vh
+        }
+
+        .qr-grid figure {
+            flex: 0 1 26vw;
+            max-width: 26vw;
+            margin: 0;
+            text-align: center
+        }
+
+        .qr-grid img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 0.9vh;
+            background: #fff;
+            padding: 1vh
+        }
+
+        @media (max-width:520px) {
+            .qr-grid {
+                gap: 3vw
+            }
+
+            .qr-grid figure {
+                flex: 1 1 40vw;
+                max-width: 40vw;
+            }
+        }
+
+        /* 金额按钮 */
+        .amounts {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1.2vh 1.6vw
+        }
+
+        .amount-btn {
+            background: transparent;
+            color: var(--white);
+            border: 0.12vh solid rgba(255, 255, 255, 0.08);
+            padding: 1.4vh 2.4vw;
+            border-radius: 1vh;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 2.0vh;
+            text-align: center
+        }
+
+        .amount-btn.active {
+            background: rgba(255, 107, 107, 0.16);
+            border-color: rgba(255, 107, 107, 0.32);
+            color: #fff
+        }
+
+        /* 横屏时缩小二维码面积 */
+        @media (min-aspect-ratio:16/9) {
+            .qr-grid figure {
+                flex: 0 1 18vw;
+                max-width: 18vw
+            }
+
+            .qr-grid img {
+                padding: 0.6vh;
+                border-radius: 0.6vh;
+                max-height: 28vh;
+                width: auto
+            }
+
+            .gif-thumb {
+                width: calc(var(--file-height) * 0.95);
+                height: calc(var(--file-height) * 0.95)
+            }
+        }
+
+        /* 响应：窄屏把 card 竖向排列并调整尺寸 */
+        @media (max-width:920px) {
+            .card {
+                flex-direction: column;
+                width: 96vw
+            }
+
+            .left {
+                min-width: 100%;
+                padding: 3vh 4vw
+            }
+
+            .right {
+                width: 100%;
+                min-width: 100%;
+                padding: 2.5vh 4vw
+            }
+
+            .preview {
+                height: 28vh
+            }
+
+            .amounts {
+                grid-template-columns: repeat(3, 1fr)
+            }
+        }
+
+        @media (max-width:520px) {
+            .amounts {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .file {
+                padding: calc(var(--file-height) * 0.06) 3vw
+            }
+
+            .gif-thumb {
+                width: calc(var(--file-height) * 1.15);
+                height: calc(var(--file-height) * 1.15)
+            }
+        }
+
+        .download-locked {
+            display: inline-block;
+            padding: 1vh 1.4vw;
+            border-radius: 0.9vh;
+            background: rgba(255, 255, 255, 0.04);
+            border: 0.08vh dashed rgba(255, 255, 255, 0.06);
+            cursor: not-allowed;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.45vh;
+        }
+
+        .title-link {
+            color: #fff;
+            /* 默认白色，按你的主题调整 */
+            text-decoration: underline;
+        }
+
+        .title-link:hover {
+            color: red;
+            /* 悬停时变红 */
+            text-decoration: underline;
+        }
+
+        .title-link:visited {
+            color: #9aa4b2;
+            /* 已访问变灰 */
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="wrap" role="main">
+        <article class="card" aria-labelledby="title">
+            <section class="left">
+                <h1 id="title">
+                    <a href="colockn2.html" class="title-link">IN18辉光管二号机 3D 模型包</a>
+                </h1>
+
+
+                <p class="lead">clockN2.stl文件，适配IN18辉光管和圆形亚克力底座。</p>
+
+                <div class="preview" role="img" aria-label="模型缩略预览">
+                    <img src="3d_print/obj.jpg" alt="Malania 模型缩略图" class="preview-img" />
+                </div>
+
+                <div class="files" id="fileList">
+                    <!-- 文件条目（含左侧 gif）由脚本生成 -->
+                </div>
+            </section>
+
+            <aside class="right" aria-labelledby="buy">
+                <div class="panel">
+                    <div style="font-size:1.9vh;font-weight:700">立刻获取</div>
+                    <div class="note" id="purchaseNote">请选择您想支持的金额，点击相应金额按钮即可扫码付款。</div>
+
+                    <div style="display:flex;gap:2vw;margin-top:1vh;align-items:center">
+                        <div class="amounts" id="amounts">
+                            <button class="amount-btn" data-amount="2">¥2</button>
+                            <button class="amount-btn" data-amount="5">¥5</button>
+                            <button class="amount-btn" data-amount="10">¥10</button>
+                            <button class="amount-btn" data-amount="15">¥15</button>
+                            <button class="amount-btn" data-amount="25">¥25</button>
+                            <button class="amount-btn" data-amount="50">¥50</button>
+                        </div>
+
+                        <a id="downloadAll" class="download-locked" href="#" aria-disabled="true">全部下载 (ZIP)</a>
+                    </div>
+
+                    <div class="note" style="margin-top:0.6vh">创作不易，若您愿意支持作者，感谢您的信任与鼓励。</div>
+                </div>
+            </aside>
+        </article>
+    </main>
+
+    <!-- 支付模态 -->
+    <div id="payModal" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal" role="document" aria-labelledby="payTitle">
+            <h2 id="payTitle" style="margin:0 0 0.6vh 0;font-size:1.9vh">扫码支付</h2>
+            <p class="muted" id="modalHint" style="margin:0 0 1vh 0;font-size:1.3vh">若方便请扫码付款，完成后请在页面点击“我已完成付款”，感谢您的支持
+            </p>
+
+            <div style="margin-top:0.6vh;font-size:1.6vh">请选择扫码工具并使用下方二维码完成支付：<strong id="selectedAmount"
+                    style="margin-left:0.8vh"></strong></div>
+
+            <div class="qr-grid">
+                <figure>
+                    <img id="qrAlipay" src="3d_print/img/1711604188130.jpg" alt="支付宝二维码" />
+                    <figcaption class="muted" style="margin-top:0.8vh;font-size:1.2vh">支付宝扫码</figcaption>
+                </figure>
+                <figure>
+                    <img id="qrWeChat" src="3d_print/img/mm_facetoface_collect_qrcode_1711603406115.png" alt="微信二维码" />
+                    <figcaption class="muted" style="margin-top:0.8vh;font-size:1.2vh">微信扫码</figcaption>
+                </figure>
+            </div>
+
+            <div class="actions">
+                <button id="paidConfirm" class="btn">我已完成付款</button>
+                <button id="payCancel" class="btn secondary">取消</button>
+                <div style="margin-left:auto" class="muted" id="payAssist">若方便请扫码付款，完成后请在页面点击“我已完成付款”，感谢您的支持</div>
+            </div>
+
+            <div id="payNotice" class="muted" style="margin-top:1vh;display:none"></div>
+        </div>
+    </div>
+
+    <script>
+        // 每个文件对应的 GIF（顺序一一对应）
+        const FILES = [
+            { name: 'clockN2.stl', path: '3d_print/clockN2.stl', sizeKB: 15702, gif: '3d_print/p1.gif', gifAlt: '视角 1' },
+            { name: 'clocknumber.stl', path: '3d_print/clocknumber.stl', sizeKB: 7062, gif: '3d_print/p2.gif', gifAlt: '视角 2' },
+        ];
+
+        const LOCKED_LABEL = '请先购买';
+        const DOWNLOAD_ALL = '3d_print/clockN2.zip';
+
+        const fileListEl = document.getElementById('fileList');
+        const amountButtons = Array.from(document.querySelectorAll('.amount-btn'));
+        const buyModal = document.getElementById('payModal');
+        const selectedAmountEl = document.getElementById('selectedAmount');
+        const paidBtn = document.getElementById('paidConfirm');
+        const cancelBtn = document.getElementById('payCancel');
+        const downloadAllEl = document.getElementById('downloadAll');
+
+        // 生成单个行：含 gif 缩略图 + 元数据 + 按钮（锁定态）
+        function createLockedRow(f) {
+            const row = document.createElement('div');
+            row.className = 'file';
+            row.innerHTML = `
+        <div class="file-left">
+          <figure class="gif-thumb" aria-hidden="false">
+            <img src="${f.gif}" alt="${f.gifAlt}" loading="lazy" />
+          </figure>
+          <div class="meta">
+            <div class="name">${f.name}</div>
+            <div class="sub">STL • <span data-size>已锁定</span></div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-locked" disabled>${LOCKED_LABEL}</button>
+        </div>
+      `;
+            return row;
+        }
+
+        // 解锁态行
+        function createUnlockedRow(f) {
+            const row = document.createElement('div');
+            row.className = 'file';
+            row.innerHTML = `
+        <div class="file-left">
+          <figure class="gif-thumb" aria-hidden="false">
+            <img src="${f.gif}" alt="${f.gifAlt}" loading="lazy" />
+          </figure>
+          <div class="meta">
+            <div class="name">${f.name}</div>
+            <div class="sub">OBJ • <span data-size>${f.sizeKB} KB</span></div>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn" href="${f.path}" download>下载</a>
+        </div>
+      `;
+            return row;
+        }
+
+        // 初始化锁定列表（含 gif）
+        function lockFileList() {
+            fileListEl.innerHTML = '';
+            FILES.forEach(f => fileListEl.appendChild(createLockedRow(f)));
+
+            // 锁定全部下载按钮（视觉与主按钮一致但不可用）
+            downloadAllEl.className = 'btn';
+            downloadAllEl.style.opacity = '0.62';
+            downloadAllEl.style.pointerEvents = 'none';
+            downloadAllEl.href = '#';
+            downloadAllEl.setAttribute('aria-disabled', 'true');
+            downloadAllEl.removeAttribute('download');
+        }
+
+        // 解锁所有文件与全部下载
+        function unlockFileList() {
+            fileListEl.innerHTML = '';
+            FILES.forEach(f => fileListEl.appendChild(createUnlockedRow(f)));
+
+            downloadAllEl.className = 'btn secondary';
+            downloadAllEl.style.opacity = '';
+            downloadAllEl.style.pointerEvents = '';
+            downloadAllEl.href = DOWNLOAD_ALL;
+            downloadAllEl.setAttribute('download', 'clockN2.zip');
+            downloadAllEl.removeAttribute('aria-disabled');
+        }
+
+        // 打开模态并设置金额显示
+        let selectedAmount = null;
+        function openModalWithAmount(amount) {
+            selectedAmount = amount;
+            selectedAmountEl.textContent = `支持金额：¥${amount}`;
+            paidBtn.disabled = false;
+            paidBtn.textContent = '我已完成付款';
+            buyModal.style.display = 'flex';
+            buyModal.setAttribute('aria-hidden', 'false');
+            paidBtn.focus();
+        }
+        function closeModal() {
+            buyModal.style.display = 'none';
+            buyModal.setAttribute('aria-hidden', 'true');
+        }
+
+        // 绑定金额按钮
+        amountButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                amountButtons.forEach(x => x.classList.remove('active'));
+                btn.classList.add('active');
+                const amount = btn.getAttribute('data-amount');
+                openModalWithAmount(amount);
+            });
+        });
+
+        // 取消模态
+        cancelBtn.addEventListener('click', closeModal);
+
+        // 点击已支付（客户端示例：直接解锁）
+        paidBtn.addEventListener('click', () => {
+            paidBtn.disabled = true;
+            paidBtn.textContent = '正在处理...';
+            setTimeout(() => {
+                unlockFileList();
+                closeModal();
+            }, 700);
+        });
+
+        // Esc 关闭
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && buyModal.getAttribute('aria-hidden') === 'false') closeModal();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lockFileList();
+            // 如需可在此处更新二维码图片路径
+            // document.getElementById('qrAlipay').src = '3d_print/img/1711604188130.jpg';
+            // document.getElementById('qrWeChat').src = '3d_print/img/mm_facetoface_collect_qrcode_1711603406115.png';
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,119 @@
+# Blender 4.5.3 LTS MTL File: 'GiF140_3196_autosave.blend'
+# www.blender.org
+
+newmtl Deteriorated_Paint_Surface
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.783537 0.693871 0.644480
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Gold
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+
+newmtl Marble.002
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Bump -s 1.5 1.5 1.5 -bm 0.001000 C:/Marbre_TP4_normal.jpg
+
+newmtl Painted_concrete_wall
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Ns C:/wall03_roughness.jpg
+
+newmtl Peeling_Paint.001
+Ka 0.250000 0.250000 0.250000
+Ks 0.200000 0.200000 0.200000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd C:/paint-1_diffuse - green.jpg
+map_Ns C:/paint-1_roughness.jpg
+map_Bump -bm 1.000000 C:/paint-1_normal.jpg
+
+newmtl Procedural_Car_Paint
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Procedural_corroded_metal
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+
+newmtl Scratched_Green_Painted_Metal
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/Scratched Green Painted Metal_BaseColor.jpg
+map_Ns C:/Scratched Green Painted Metal_Roughness.jpg
+map_refl C:/Scratched Green Painted Metal_Metallic.jpg
+map_Bump -bm 1.000000 C:/Scratched Green Painted Metal_Normal.jpg
+
+newmtl Scratched_Yellow_Painted_Metal
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/Painted Metal yellow_Color.jpg
+map_Ns C:/Painted Metal_Roughness.jpg
+map_refl C:/Painted Metal_Metalness.jpg
+map_Bump -bm 1.000000 C:/Painted Metal_NormalGL.jpg
+
+newmtl Stratched_painted_golden_metal
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd C:/metal_stratched_gold_diffuse.jpg
+map_Ns C:/metal_stratched_gold_roughness.jpg
+map_refl C:/metal_stratched_gold_metalness.jpg
+
+newmtl Worn_Metal_Paint_Procedural
+Ns 360.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2

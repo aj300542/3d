@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <script src="wakelock.js"></script>
+  <link rel="shortcut icon" href="good_128x128.ico">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* 基础重置和全局样式 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #000000;
+      color: #fb7c00;
+      font-family: 'Nixiebold-mini', Arial, sans-serif;
+      line-height: 1.5em;
+      letter-spacing: 0.4em;
+      overflow: hidden;
+      /* 防止滚动条 */
+    }
+
+    /* 视频背景容器 */
+    .video-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .video-container video {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: black;
+      transform: translate(0, 0) scale(1.2);
+      opacity: 0;
+    }
+
+    .video-container video.active {
+      opacity: 1;
+      z-index: 1;
+    }
+
+    .video-container iframe {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      z-index: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+
+    .video-container iframe.active {
+      opacity: 1;
+      z-index: 1;
+    }
+
+    /* 主内容容器 - 关键居中布局 */
+    .main {
+      width: 100%;
+      max-width: 1920px;
+      /* 限制最大宽度，避免过宽 */
+      padding: 20px;
+      z-index: 2;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      /* 左右小图和中间内容的间距 */
+      width: 100%;
+    }
+
+    /* 左右小图片容器 - 改为flex布局，不再用绝对定位 */
+    .side-cover {
+      display: flex;
+      flex-direction: column;
+      opacity: 0.5;
+      gap: 20px;
+    }
+
+    .cover-small-left,
+    .cover-small-right {
+      width: 200px;
+      height: 200px;
+      border-radius: 3vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .cover-small-left img,
+    .cover-small-right img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* 中间主内容区域 */
+    .central-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 25px;
+      /* 内容块之间的间距 */
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .container {
+      text-align: center;
+      width: 100%;
+    }
+
+    /* 文字样式优化 */
+    .font-italic.lead {
+      margin: 10px 0;
+      letter-spacing: 0.2em;
+      font-size: 1.1em;
+    }
+
+    h1.text-uppercase {
+      font-size: 1.8em;
+      margin: 20px 0;
+      letter-spacing: 0.5em;
+    }
+
+    /* 图片卡片容器 - 统一包裹，flex居中排列 */
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      /* 卡片之间的间距 */
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin: 15px 0;
+    }
+
+    /* 图片卡片样式 */
+    .img-container {
+      width: 220px;
+      aspect-ratio: 4 / 2;
+      position: relative;
+      opacity: 0.5;
+      transition: opacity 1s ease-in-out, transform 0.5s ease, border-color 0.5s ease;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .img-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* 悬停文字样式 */
+    .hover-text {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      text-align: center;
+      padding: 10px;
+      opacity: 0;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      pointer-events: none;
+      transform: translateY(10px);
+      letter-spacing: 0.1em;
+    }
+
+    /* 高亮文字状态 */
+    .hover-text.highlight {
+      opacity: 1;
+      transform: translateY(0);
+      background-color: rgba(0, 0, 0, 0.5);
+      font-weight: bold;
+      font-size: 1.5em;
+      font-family: 'SimHei', 'Microsoft YaHei', sans-serif;
+      letter-spacing: 0.2em;
+    }
+
+    /* 激活状态 */
+    .img-container.active {
+      opacity: 1;
+      border-color: #ff6b35;
+      transform: scale(1.05);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+    }
+
+    .img-container.active .hover-text:not(.highlight) {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Show hover text for small side-cover images when hovered */
+    .cover-small-left:hover .hover-text,
+    .cover-small-right:hover .hover-text {
+      opacity: 1;
+      transform: translateY(0);
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    /* 链接样式优化 */
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .download-link {
+      display: inline-block;
+      margin: 15px 0;
+      text-decoration: none;
+      font-weight: bold;
+      background: linear-gradient(to right, #ff6600, #ffcc00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-family: 'SimHei', 'Microsoft YaHei', sans-serif;
+      font-size: 1.1em;
+      letter-spacing: 0.2em;
+      transition: transform 0.3s ease;
+    }
+
+    .download-link:hover {
+      transform: scale(1.05);
+    }
+
+    /* 响应式调整 - 小屏幕适配 */
+    @media (max-width: 900px) {
+      .hero {
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      .side-cover {
+        flex-direction: row;
+        gap: 30px;
+      }
+
+      .cover-small-left,
+      .cover-small-right {
+        width: 15vh;
+        height: 15vh;
+      }
+
+      .img-container {
+        width: 140px;
+      }
+
+      h1.text-uppercase {
+        font-size: 1.5em;
+        letter-spacing: 0.3em;
+      }
+
+      .font-italic.lead {
+        font-size: 1em;
+        letter-spacing: 0.1em;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .gallery {
+        gap: 15px;
+      }
+
+      .img-container {
+        width: 120px;
+        aspect-ratio: 3 / 2;
+      }
+
+      .side-cover {
+        gap: 20px;
+      }
+
+      .cover-small-left,
+      .cover-small-right {
+        width: 12vh;
+      }
+
+      h1.text-uppercase {
+        font-size: 1.2em;
+        letter-spacing: 0.2em;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="video-container">
+    <div class="background-content">
+      <video class="active" autoplay muted>
+        <source src="/elden ring/converted_mp4/gp0001-0120_web.mp4" type="video/mp4">
+      </video>
+      <video class="active" autoplay muted>
+        <source src="/bigButtom/converted_mp4/p10001-0170_web.mp4" type="video/mp4">
+      </video>
+      <video class="active" autoplay muted>
+        <source src="/gandan/converted_mp4/p1.mp4" type="video/mp4">
+      </video>
+      <video class="active" autoplay muted>
+        <source src="/colock_shell/converted_mp4/pp10001-0170_web.mp4" type="video/mp4">
+      </video>
+    </div>
+    <iframe class="background-iframe" frameborder="0" scrolling="no"></iframe>
+  </div>
+
+  <div class="main">
+    <section class="hero">
+      <!-- 左侧小图片 - 改为flex布局的side-cover容器 -->
+      <div class="side-cover">
+        <div class="cover-small-left">
+          <a href="https://aj300542.github.io">
+            <img src="U+1F515.gif" alt="返回主网站">
+            <div class="hover-text">返回主网站<br>PAST</div>
+          </a>
+        </div>
+      </div>
+
+      <!-- 中间主内容区域 -->
+      <div class="central-content">
+        <div class="container text-white">
+          <p class="font-italic lead">Hi, how are you doing</p>
+          <h1 class="text-uppercase my-4">Wish You All The Best</h1>
+          <p class="font-italic lead">黑悟空暴击键 珊瑚虫鸟屋 辉光管外壳 </p>
+          <!-- 图片卡片容器 - 用gallery包裹实现居中排列 -->
+          <div class="gallery">
+            <div class="img-container" data-href="/bigButtom/bigButtom.html">
+              <a href="/bigButtom/bigButtom.html" class="d-block mb-1" target="_blank">
+                <img src="/bigButtom/3d_print/objs.jpg" alt="黑悟空暴击键盘">
+                <div class="hover-text">黑悟空暴击键盘</div>
+              </a>
+            </div>
+
+            <div class="img-container" data-href="/birdhouse/birdhouse.html">
+              <a href="/birdhouse/birdhouse.html" class="d-block mb-1" target="_blank">
+                <img src="/birdhouse/3d_print/objs.jpg" alt="珊瑚虫鸟屋">
+                <div class="hover-text">珊瑚虫鸟屋</div>
+              </a>
+            </div>
+
+            <div class="img-container" data-href="/colock_n2/colockn2.html">
+              <a href="/colock_n2/colockn2.html" class="d-block mb-1" target="_blank">
+                <img src="/colock_n2/3d_print/objs.jpg" alt="复刻辉光管IN18">
+                <div class="hover-text">复刻辉光管IN18</div>
+              </a>
+            </div>
+
+            <div class="img-container" data-href="/colock_shell/colockshell.html">
+              <a href="/colock_shell/colockshell.html" class="d-block mb-1" target="_blank">
+                <img src="/colock_shell/3d_print/objs.jpg" alt="复刻辉光管IN12">
+                <div class="hover-text">复刻辉光管IN12</div>
+              </a>
+            </div>
+          </div>
+
+          <p class="font-italic lead">赛博朋克小黑键帽 蠢朋克 老头环女武神 崩坏高达面具 </p>
+
+          <div class="gallery">
+            <div class="img-container" data-href="/cyberdog/cyberdog.html">
+              <a href="/cyberdog/cyberdog.html" class="d-block mb-1" target="_blank">
+                <img src="/cyberdog/3d_print/objs.jpg" alt="赛博朋克小黑狗狗键帽">
+                <div class="hover-text">赛博朋克小黑狗狗键帽</div>
+              </a>
+            </div>
+
+            <div class="img-container" data-href="/draft-punk/draftpunk.html">
+              <a href="/draft-punk/draftpunk.html" class="d-block mb-1" target="_blank">
+                <img src="/draft-punk/3d_print/objs.jpg" alt="蠢朋克头盔">
+                <div class="hover-text">蠢朋克头盔</div>
+              </a>
+            </div>
+
+            <div class="img-container" data-href="/elden ring/eldenring.html">
+              <a href="/elden ring/eldenring.html" class="d-block mb-1" target="_blank">
+                <img src="/elden ring/3d_print/objs.jpg" alt="女武神头盔">
+                <div class="hover-text">女武神头盔</div>
+              </a>
+            </div>
+
+            <div class="img-container" data-href="/gandan/gandan.html">
+              <a href="/gandan/gandan.html" class="d-block mb-1" target="_blank">
+                <img src="/gandan/3d_print/objs.jpg" alt="敢达:高达面具">
+                <div class="hover-text">敢达:高达面具</div>
+              </a>
+            </div>
+          </div>
+          <p class="font-italic lead">一拳超人 琦玉 龙卷 狗狗侠 悟空行者 面具 </p>
+          <!-- 图片卡片容器 - 用gallery包裹实现居中排列 -->
+          <div class="gallery">
+            <div class="img-container" data-href="/qiyu/qiyu.html">
+              <a href="/qiyu/qiyu.html" class="d-block mb-1" target="_blank">
+                <img src="/qiyu/3d_print/objs.jpg" alt="一拳超人琦玉面具">
+                <div class="hover-text">一拳超人琦玉面具</div>
+              </a>
+            </div>
+            <div class="img-container" data-href="/longjuan/longjuan.html">
+              <a href="/longjuan/longjuan.html" class="d-block mb-1" target="_blank">
+                <img src="/longjuan/3d_print/objs.jpg" alt="一拳超人龙卷面具">
+                <div class="hover-text">一拳超人龙卷面具</div>
+              </a>
+            </div>
+            <div class="img-container" data-href="/longjuan/longjuan.html">
+              <a href="/gougouxia/gougou.html" class="d-block mb-1" target="_blank">
+                <img src="/gougouxia/3d_print/objs.jpg" alt="一拳超人狗狗侠面具">
+                <div class="hover-text">一拳超人狗狗侠面具</div>
+              </a>
+            </div>
+            <div class="img-container" data-href="/wukong/wukong.html">
+              <a href="/wukong/wukong.html" class="d-block mb-1" target="_blank">
+                <img src="/wukong/3d_print/objs.jpg" alt="黑神话悟空行者面具">
+                <div class="hover-text">黑神话悟空行者面具</div>
+              </a>
+            </div>
+          </div>
+                    <p class="font-italic lead">黑神话 虎先锋面具 </p>
+          <!-- 图片卡片容器 - 用gallery包裹实现居中排列 -->
+          <div class="gallery">
+            <div class="img-container" data-href="/tiger/tiger.html">
+              <a href="/tiger/tiger.html" class="d-block mb-1" target="_blank">
+                <img src="/tiger/3d_print/objs.jpg" alt="黑神话虎先锋面具">
+                <div class="hover-text">黑神话虎先锋面具</div>
+              </a>
+            </div>
+            <div class="img-container" data-href="/longjuan/longjuan.html">
+              <a href="/longjuan/longjuan.html" class="d-block mb-1" target="_blank">
+                <img src="/longjuan/3d_print/objs.jpg" alt="一拳超人龙卷面具">
+                <div class="hover-text">一拳超人龙卷面具</div>
+              </a>
+            </div>
+            <div class="img-container" data-href="/longjuan/longjuan.html">
+              <a href="/gougouxia/gougou.html" class="d-block mb-1" target="_blank">
+                <img src="/gougouxia/3d_print/objs.jpg" alt="一拳超人狗狗侠面具">
+                <div class="hover-text">一拳超人狗狗侠面具</div>
+              </a>
+            </div>
+            <div class="img-container" data-href="/wukong/wukong.html">
+              <a href="/wukong/wukong.html" class="d-block mb-1" target="_blank">
+                <img src="/wukong/3d_print/objs.jpg" alt="黑神话悟空行者面具">
+                <div class="hover-text">黑神话悟空行者面具</div>
+              </a>
+            </div>
+          </div>
+
+          <a href="https://aj300542.github.io/download.html" class="download-link" target="_blank">
+            源代码下载超链接或捐赠页面
+          </a>
+          <p class="font-italic lead">我是那只牛那只马，给你写代码，喜欢不要忘记给我一点点支持</p>
+          <p class="font-italic lead">你的支持是我前进的动力，谢谢支持</p>
+        </div>
+      </div>
+
+      <!-- 右侧小图片 -->
+      <div class="side-cover">
+        <div class="cover-small-right">
+          <a href="https://aj300542.github.io/">
+            <img src="U+1F5B2.gif" alt="返回主网站">
+            <div class="hover-text">返回主网站<br>FUTURE</div>
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const items = document.querySelectorAll('.img-container');
+      const allHoverTexts = document.querySelectorAll('.hover-text');
+
+      if (items.length === 0 || allHoverTexts.length === 0) return;
+
+      const config = {
+        initialIndex: 0,
+        interval: 1000,
+        opacityGradients: [1.0, 0.85, 0.7, 0.55, 0.4, 0.25],
+        minOpacity: 0.15
+      };
+
+      let currentIndex = config.initialIndex;
+      const totalItems = items.length;
+      let animationTimer;
+      let isHoveringImg = false;
+
+      const getOpacityByDistance = (distance) => {
+        return config.opacityGradients[distance] ?? config.minOpacity;
+      };
+
+      function updateOpacities() {
+        items.forEach((item, index) => {
+          let distance = Math.abs(index - currentIndex);
+          distance = Math.min(distance, totalItems - distance);
+          item.style.opacity = getOpacityByDistance(distance);
+          item.classList.toggle('active', index === currentIndex);
+        });
+      }
+
+      function showNextItem() {
+        currentIndex = (currentIndex + 1) % totalItems;
+        updateOpacities();
+      }
+
+      updateOpacities();
+      animationTimer = setInterval(showNextItem, config.interval);
+
+      document.addEventListener('mouseover', (event) => {
+        const targetImg = event.target.closest('.img-container');
+        if (targetImg) {
+          isHoveringImg = true;
+          clearInterval(animationTimer);
+          const targetIndex = Array.from(items).findIndex(item => item === targetImg);
+          if (targetIndex !== -1) {
+            currentIndex = targetIndex;
+            updateOpacities();
+          }
+          allHoverTexts.forEach(text => text.classList.add('highlight'));
+        }
+      });
+
+      document.addEventListener('mouseout', (event) => {
+        const isLeavingImgContainer = event.target.closest('.img-container');
+        const isEnteringAnotherImgContainer = event.relatedTarget && event.relatedTarget.closest('.img-container');
+
+        if (isLeavingImgContainer && !isEnteringAnotherImgContainer) {
+          isHoveringImg = false;
+          setTimeout(() => {
+            if (!document.querySelector('.img-container:hover')) {
+              allHoverTexts.forEach(text => text.classList.remove('highlight'));
+              animationTimer = setInterval(showNextItem, config.interval);
+            }
+          }, 100);
+        }
+      });
+
+      window.pauseAnimation = () => clearInterval(animationTimer);
+      window.resumeAnimation = () => {
+        if (!animationTimer && !isHoveringImg) {
+          animationTimer = setInterval(showNextItem, config.interval);
+        }
+      };
+    });
+  </script>
+
+  <script>
+    const iframe = document.querySelector('.background-iframe');
+    const video = document.querySelector('.video-container video');
+    const imgContainers = document.querySelectorAll('.img-container');
+    let timeoutId;
+
+    imgContainers.forEach(container => {
+      container.addEventListener('mouseover', () => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+        const htmlPath = container.dataset.href;
+        if (htmlPath) {
+          video.style.opacity = '0';
+          iframe.src = htmlPath;
+          iframe.classList.add('active');
+        }
+      });
+
+      container.addEventListener('mouseout', () => {
+        iframe.classList.remove('active');
+        timeoutId = setTimeout(() => {
+          iframe.src = '';
+          video.style.opacity = '1';
+        }, 1500);
+      });
+    });
+  </script>
+
+  <script>
+    const PAUSE_MS = 1500;
+    const videos = Array.from(document.querySelectorAll('.video-container video'));
+    let current = 0;
+
+    videos.forEach(v => v.setAttribute('preload', 'auto'));
+
+    function initState() {
+      videos.forEach((v, i) => {
+        if (i === current) {
+          v.style.opacity = '1';
+          v.classList.add('active');
+          try { v.play().catch(() => { }); } catch (e) { }
+        } else {
+          v.style.opacity = '0';
+          v.classList.remove('active');
+          try { v.pause(); v.currentTime = 0; } catch (e) { }
+        }
+      });
+    }
+    initState();
+
+    async function switchTo(nextIndex) {
+      if (nextIndex === current) return;
+      const curV = videos[current];
+      const nextV = videos[nextIndex];
+
+      try { nextV.currentTime = 0; } catch (e) { }
+      try { await nextV.play(); } catch (e) { }
+
+      nextV.style.opacity = '1';
+      nextV.classList.add('active');
+
+      try { curV.pause(); curV.currentTime = 0; } catch (e) { }
+      curV.style.opacity = '0';
+      curV.classList.remove('active');
+
+      current = nextIndex;
+    }
+
+    videos.forEach((v, i) => {
+      v.addEventListener('ended', () => {
+        const nextIndex = (i + 1) % videos.length;
+        setTimeout(() => {
+          const safeNext = (current + 1) % videos.length;
+          switchTo(safeNext);
+        }, PAUSE_MS);
+      });
+    });
+
+    function startOnInteractionOnce() {
+      try { videos[current].play().catch(() => { }); } catch (e) { }
+      window.removeEventListener('click', startOnInteractionOnce);
+      window.removeEventListener('touchstart', startOnInteractionOnce);
+    }
+    window.addEventListener('click', startOnInteractionOnce, { once: true, passive: true });
+    window.addEventListener('touchstart', startOnInteractionOnce, { once: true, passive: true });
+  </script>
+</body>
+
+</html>
