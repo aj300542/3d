@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>商品展示页面</title>
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      color: gray;
+    }
+
+    .video-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .video-container video {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      /* 保持比例完整显示 */
+      background: black;
+      /* 留黑边时填充背景色 */
+      transform: translate(0, 0) scale(1.0);
+      /* 保留放大效果 */
+      opacity: 0;
+    }
+
+    .video-container video.active {
+      opacity: 1;
+      z-index: 1;
+    }
+
+    .content {
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 1.5em;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      color: #fff;
+      background: #e74c3c;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #c0392b;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 背景视频容器 -->
+  <div class="video-container">
+    <video class="active" autoplay muted>
+      <source src="converted_mp4/p10001-0170_web.mp4" type="video/mp4">
+    </video>
+    <video class="active" autoplay muted>
+      <source src="converted_mp4/p20001-0170_web.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- 商品展示内容 -->
+  <div class="content">
+    <h1>33号远征队：埃斯基耶 eskier</h1>
+    <p>面具电子档案，高品质设计，极致体验，让生活更精彩。</p>
+    <a href="buy.html" class="btn" target="_blank" rel="noopener noreferrer">立即购买下载</a>
+  </div>
+
+  <script>
+    /*
+      行为：
+      - 每段视频播放结束后等待 PAUSE_MS（ms），然后立即切换到下一段（无过渡）
+      - 切换时立即设置下一段可见并播放，暂停并重置前一段以节省资源
+      - 处理 autoplay 限制（尝试 play() 并捕获拒绝），并在用户首次交互时启动
+    */
+
+    const PAUSE_MS = 1500;
+    const videos = Array.from(document.querySelectorAll('.video-container video'));
+    let current = 0;
+
+    // 预加载
+    videos.forEach(v => v.setAttribute('preload', 'auto'));
+
+    // 确保初始可见状态：只有 current 可见（opacity 用 inline style 控制）
+    function initState() {
+      videos.forEach((v, i) => {
+        if (i === current) {
+          v.style.opacity = '1';
+          v.classList.add('active');
+          try { v.play().catch(() => { }); } catch (e) { }
+        } else {
+          v.style.opacity = '0';
+          v.classList.remove('active');
+          try { v.pause(); v.currentTime = 0; } catch (e) { }
+        }
+      });
+    }
+    initState();
+
+    // 切换到指定索引（无过渡，立即切换）
+    async function switchTo(nextIndex) {
+      if (nextIndex === current) return;
+      const curV = videos[current];
+      const nextV = videos[nextIndex];
+
+      // 准备并播放下一个视频
+      try { nextV.currentTime = 0; } catch (e) { }
+      try { await nextV.play(); } catch (e) { }
+
+      // 立即显示 next，隐藏 current
+      nextV.style.opacity = '1';
+      nextV.classList.add('active');
+
+      try { curV.pause(); curV.currentTime = 0; } catch (e) { }
+      curV.style.opacity = '0';
+      curV.classList.remove('active');
+
+      current = nextIndex;
+    }
+
+    // 在当前视频 ended 后等待 PAUSE_MS 再切换
+    videos.forEach((v, i) => {
+      v.addEventListener('ended', () => {
+        const nextIndex = (i + 1) % videos.length;
+        setTimeout(() => {
+          // 如果 current 在等待期间被外部修改，则以最新 current 为准，计算下一个
+          // 使用当前索引 current 而不是 i，保证顺序正确
+          const safeNext = (current + 1) % videos.length;
+          switchTo(safeNext);
+        }, PAUSE_MS);
+      });
+    });
+
+    // 用户交互启动（处理 autoplay 被阻止的情况）
+    function startOnInteractionOnce() {
+      try { videos[current].play().catch(() => { }); } catch (e) { }
+      window.removeEventListener('click', startOnInteractionOnce);
+      window.removeEventListener('touchstart', startOnInteractionOnce);
+    }
+    window.addEventListener('click', startOnInteractionOnce, { once: true, passive: true });
+    window.addEventListener('touchstart', startOnInteractionOnce, { once: true, passive: true });
+  </script>
+
+
+
+</body>
+
+</html>
