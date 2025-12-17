@@ -3,7 +3,6 @@
 
 <head>
   <meta charset="utf-8">
-  <script src="wakelock.js"></script>
   <link rel="shortcut icon" href="good_128x128.ico">
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,14 +18,14 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       background-color: #000000;
       color: #fb7c00;
       font-family: 'Nixiebold-mini', Arial, sans-serif;
       line-height: 1.5em;
       letter-spacing: 0.4em;
-      overflow: hidden;
-      /* 防止滚动条 */
+      overflow: auto;
+      /* 允许滚动以显示所有内容 */
     }
 
     /* 视频背景容器 */
@@ -614,6 +613,29 @@
         }
       });
 
+      // 添加触摸事件支持
+      document.addEventListener('touchstart', (event) => {
+        const targetImg = event.target.closest('.img-container');
+        if (targetImg) {
+          isHoveringImg = true;
+          clearInterval(animationTimer);
+          const targetIndex = Array.from(items).findIndex(item => item === targetImg);
+          if (targetIndex !== -1) {
+            currentIndex = targetIndex;
+            updateOpacities();
+          }
+          allHoverTexts.forEach(text => text.classList.add('highlight'));
+        }
+      });
+
+      document.addEventListener('touchend', (event) => {
+        isHoveringImg = false;
+        setTimeout(() => {
+          allHoverTexts.forEach(text => text.classList.remove('highlight'));
+          animationTimer = setInterval(showNextItem, config.interval);
+        }, 100);
+      });
+
       window.pauseAnimation = () => clearInterval(animationTimer);
       window.resumeAnimation = () => {
         if (!animationTimer && !isHoveringImg) {
@@ -644,6 +666,28 @@
       });
 
       container.addEventListener('mouseout', () => {
+        iframe.classList.remove('active');
+        timeoutId = setTimeout(() => {
+          iframe.src = '';
+          video.style.opacity = '1';
+        }, 1500);
+      });
+
+      // 添加触摸事件支持
+      container.addEventListener('touchstart', () => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+        const htmlPath = container.dataset.href;
+        if (htmlPath) {
+          video.style.opacity = '0';
+          iframe.src = htmlPath;
+          iframe.classList.add('active');
+        }
+      });
+
+      container.addEventListener('touchend', () => {
         iframe.classList.remove('active');
         timeoutId = setTimeout(() => {
           iframe.src = '';
