@@ -17,7 +17,7 @@ function createLockedRow(f) {
           </figure>
           <div class="meta">
             <div class="name">${f.name}</div>
-            <div class="sub">OBJ • <span data-size>已锁定</span></div>
+            <div class="sub">file • <span data-size>已锁定</span></div>
           </div>
         </div>
         <div class="actions">
@@ -38,7 +38,7 @@ function createUnlockedRow(f) {
           </figure>
           <div class="meta">
             <div class="name">${f.name}</div>
-            <div class="sub">OBJ •</div>
+            <div class="sub">file •</div>
           </div>
         </div>
         <div class="actions">
